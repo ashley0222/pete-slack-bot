@@ -1,3 +1,7 @@
+index.js
+package.json
+.env.example
+README.md
 import 'dotenv/config';
 import { App, ExpressReceiver, LogLevel } from '@slack/bolt';
 import OpenAI from 'openai';
