@@ -7,16 +7,16 @@ const {
   SLACK_SIGNING_SECRET,
   OPENAI_API_KEY,
   DRIVE_LIBRARY_URL,
-  PORT = 10000
+  PORT = process.env.PORT || 10000
 } = process.env;
 
-// HTTP receiver gives us /slack/events for Slack verification
+// HTTP receiver exposes /slack/events for Slack verification
 const receiver = new ExpressReceiver({
   signingSecret: SLACK_SIGNING_SECRET,
   processBeforeResponse: true
 });
 
-// optional health check
+// Health check so you can open your Render URL and see it's running
 receiver.router.get('/', (_req, res) => {
   res.status(200).send('PETE Slack bot is up (HTTP mode).');
 });
@@ -68,13 +68,11 @@ async function askPETE(userText, userName) {
     { role: 'system', content: PETE_SYSTEM_PROMPT },
     { role: 'user', content: `${userName ? `From @${userName}: ` : ''}${userText}` }
   ];
-
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     temperature: 0.3,
     messages
   });
-
   return completion.choices?.[0]?.message?.content?.trim() || 'Sorry — I had trouble formulating a response.';
 }
 
@@ -120,7 +118,7 @@ app.command('/pete', async ({ command, ack, respond }) => {
   }
 });
 
-// Mentions in channels
+// @mentions in channels
 app.event('app_mention', async ({ event, client, say }) => {
   const text = (event.text || '').replace(/<@[^>]+>\s*/, '');
   await say({ text: `_On it…_`, thread_ts: event.ts });
@@ -154,9 +152,7 @@ app.event('message', async ({ event, client }) => {
   await app.start(PORT);
   console.log(`PETE listening on port ${PORT} (HTTP mode).`);
 })();
-
-
-package.json {
+{
   "name": "pete-slack-bot",
   "version": "1.0.0",
   "type": "module",
@@ -170,15 +166,12 @@ package.json {
     "openai": "^4.61.1"
   }
 }
-
 SLACK_BOT_TOKEN=
 SLACK_SIGNING_SECRET=
 OPENAI_API_KEY=
 DRIVE_LIBRARY_URL=https://drive.google.com/drive/folders/17ffwyzquvLyEX_PhLCu7vc9HeoczB6Yo
 PORT=10000
-
-
-readme.md # PETE Slack Bot (Render + Slack HTTP Mode)
+# PETE Slack Bot (Render + Slack HTTP Mode)
 
 ## Env Vars
 - SLACK_BOT_TOKEN (xoxb-…)
