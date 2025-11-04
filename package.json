@@ -1,0 +1,14 @@
+{
+  "name": "pete-slack-bot",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@slack/bolt": "^3.18.0",
+    "dotenv": "^16.4.5",
+    "openai": "^4.61.1"
+  }
+}
